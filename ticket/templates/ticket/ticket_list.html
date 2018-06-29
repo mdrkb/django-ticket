@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Ticket Demo</title>
+</head>
+<body>
+<h1>Django Ticket Demo</h1>
+<ul>
+    {% for ticket in tickets %}
+        <li><a href="{% url 'ticket_details' ticket.id %}">{{ ticket }}</a></li>
+    {% endfor %}
+</ul>
+</body>
+</html>

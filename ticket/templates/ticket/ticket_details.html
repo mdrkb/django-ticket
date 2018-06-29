@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Ticket Demo</title>
+</head>
+<body>
+<h1>{{ ticket}}</h1>
+<p>{{ ticket.text }}</p>
+<ul>
+    {% for response in responses %}
+        <li>{{ response.text }}</li>
+    {% endfor %}
+</ul>
+
+<form action="." method="post">
+    <textarea rows="15" style="width: 100%;"></textarea>
+    <button type="submit">Send Reply</button>
+</form>
+</body>
+</html>
