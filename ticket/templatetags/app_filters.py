@@ -14,4 +14,4 @@ def reset_html_styles(value):
     for x in soup.find_all('p', {'text': ''}):
         x.extract()
 
-    return bleach.clean(text=str(soup), tags=['div', 'br', 'p', 'a'])
+    return bleach.clean(text=str(soup), tags=['div', 'br', 'p', 'a', 'b', 'strong', 'i', 'ul', 'li', 'ol', 'u', 'span'])
