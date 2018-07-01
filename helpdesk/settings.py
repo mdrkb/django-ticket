@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 from celery.schedules import crontab
+from datetime import timedelta
+from helpdesk.local_settings import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'django_mailbox',
     'ticket',
 ]
@@ -118,8 +121,8 @@ STATIC_URL = '/static/'
 
 # Celery config
 
-CELERY_BROKER_URL = 'amqp://rakib:123456@localhost:5672/rakibhost'
-CELERY_RESULT_BACKEND = 'amqp://rakib:123456@localhost:5672/rakibhost'
+CELERY_BROKER_URL = MY_BROKER_URL
+CELERY_RESULT_BACKEND = MY_BROKER_URL
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -127,6 +130,14 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'task-fetch-tickets': {
         'task': 'ticket.tasks.fetch_tickets',
-        'schedule': crontab(minute='*/1'),
+        'schedule': timedelta(seconds=30),
     },
 }
+
+# Email settings
+
+EMAIL_HOST = MY_EMAIL_HOST
+EMAIL_PORT = 587
+EMAIL_HOST_USER = MY_EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = MY_EMAIL_HOST_PASSWORD
+EMAIL_USE_TLS = True

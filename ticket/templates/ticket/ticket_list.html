@@ -1,15 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Django Ticket Demo</title>
-</head>
-<body>
-<h1>Django Ticket Demo</h1>
-<ul>
-    {% for ticket in tickets %}
-        <li><a href="{% url 'ticket_details' ticket.id %}">{{ ticket }}</a></li>
-    {% endfor %}
-</ul>
-</body>
-</html>
+{% extends "ticket/base.html" %}
+
+{% block body %}
+    <h3>Tickets</h3>
+
+    <table class="table table-hover pb-5">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">From</th>
+            <th scope="col">Subject</th>
+            <th scope="col">Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if tickets %}
+            {% for ticket in tickets %}
+                <tr>
+                    <th scope="row">{{ ticket.id }}</th>
+                    <td>{{ ticket.from_address | first }}</td>
+                    <td><a href="{% url 'ticket_details' ticket.id %}">{{ ticket.subject | truncatechars:70 }}</a></td>
+                    <td>{{ ticket.processed }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-center">
+                    No tickets found.
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -2,6 +2,7 @@ amqp==2.3.2
 billiard==3.5.0.3
 celery==4.2.0
 Django==2.0
+django-extensions==2.0.7
 django-mailbox==4.7.1
 kombu==4.2.1
 pytz==2018.5

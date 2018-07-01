@@ -1,21 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Django Ticket Demo</title>
-</head>
-<body>
-<h1>{{ ticket}}</h1>
-<p>{{ ticket.text }}</p>
-<ul>
-    {% for response in responses %}
-        <li>{{ response.text }}</li>
-    {% endfor %}
-</ul>
+{% extends "ticket/base.html" %}
 
-<form action="." method="post">
-    <textarea rows="15" style="width: 100%;"></textarea>
-    <button type="submit">Send Reply</button>
-</form>
-</body>
-</html>
+{% block body %}
+    <h3 class="mb-4">#{{ ticket.id }}: {{ ticket.subject }}</h3>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card mb-2" style="margin-right: 100px; background-color: aliceblue;">
+        <div class="card-body">
+            <p class="card-subtitle mb-2 badge text-muted float-left">
+                {{ ticket.processed }}
+            </p>
+            <p style="clear: both;">{{ ticket.html | safe }}</p>
+        </div>
+    </div>
+
+    {% for response in responses %}
+        {% if response.outgoing %}
+            <div class="card mb-2" style="margin-right: 100px; background-color: aliceblue;">
+        {% else %}
+            <div class="card mb-2" style="margin-left: 100px; background-color: antiquewhite;">
+        {% endif %}
+    <div class="card-body">
+        {% if response.outgoing %}
+            <p class="card-subtitle mb-2 badge text-muted float-left">
+                {% else %}
+            <p class="card-subtitle mb-2 badge text-muted float-right">
+        {% endif %}
+        {{ response.processed }}
+        </p>
+        <p style="clear: both;">{{ response.html | safe }}</p>
+    </div>
+    </div>
+    {% endfor %}
+
+    <form action="." method="post" class="mt-5 pb-5">
+        {% csrf_token %}
+        {{ form.response }}
+        {{ form.message }}
+        <input type="submit" class="btn btn-primary mt-2" value="Send Reply"/>
+    </form>
+
+{% endblock %}
