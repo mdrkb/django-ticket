@@ -1,10 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from django_mailbox.models import Message
 from .forms import TicketResponseForm
-from django.core.mail.message import EmailMessage, EmailMultiAlternatives
+from django.core.mail.message import EmailMultiAlternatives
 from django.contrib import messages
 import logging
-import bleach
 
 logger = logging.getLogger(__name__)
 
@@ -17,19 +16,7 @@ def ticket_list(request):
 def ticket_details(request, ticket_id):
     try:
         ticket = get_object_or_404(Message, id=ticket_id)
-
         responses = []
-        response = True
-        response_id = ticket_id
-
-        while response:
-            try:
-                response = Message.objects.get(in_reply_to=response_id)
-                response_id = response.id
-                responses.append(response)
-
-            except Message.DoesNotExist:
-                response = False
 
         if request.method == 'POST':
             form = TicketResponseForm(request.POST)
@@ -44,23 +31,42 @@ def ticket_details(request, ticket_id):
 
                     email_message = EmailMultiAlternatives(
                         body=message_plain,
-                        subject=last_response.subject,
-                        to=[last_response.from_address],
+                        subject=ticket.subject,
+                        to=[ticket.from_address],
                     )
                     email_message.attach_alternative(message_html, 'text/html')
 
                     last_response.reply(email_message)
                     messages.success(request, 'Response send successfully.', extra_tags='success')
 
-                    form = TicketResponseForm({'response': response_id})
+                    responses = get_ticket_responses(ticket)
+                    last_response = responses[-1].id if responses else ticket_id
+                    form = TicketResponseForm({'response': last_response})
 
                 except Exception as err:
                     messages.error(request, 'Failed to send response. Error: ' + str(err), extra_tags='danger')
         else:
-            form = TicketResponseForm({'response': response_id})
+            responses = get_ticket_responses(ticket)
+            last_response = responses[-1].id if responses else ticket_id
+            form = TicketResponseForm({'response': last_response})
 
         return render(request, 'ticket/ticket_details.html',
                       {'ticket': ticket, 'responses': responses, 'form': form})
 
     except Exception as err:
         logger.error('Error: ' + str(err))
+
+
+def get_ticket_responses(ticket):
+    responses = []
+    response = True
+    response_id = ticket.id
+
+    while response:
+        try:
+            response = Message.objects.get(in_reply_to=response_id)
+            response_id = response.id
+            responses.append(response)
+        except Message.DoesNotExist:
+            response = False
+    return responses

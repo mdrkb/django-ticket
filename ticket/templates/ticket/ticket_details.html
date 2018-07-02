@@ -15,9 +15,9 @@
         {% endfor %}
     {% endif %}
 
-    <div class="card mb-2" style="margin-right: 100px; background-color: aliceblue;">
+    <div class="card mb-2" style="margin-left: 100px; background-color: antiquewhite;">
         <div class="card-body">
-            <p class="card-subtitle mb-2 badge text-muted float-left">
+            <p class="card-subtitle mb-2 badge text-muted float-right">
                 {{ ticket.processed }}
             </p>
             <p style="clear: both;">{{ ticket.html | reset_html_styles | safe}}</p>
